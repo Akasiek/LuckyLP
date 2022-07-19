@@ -40,6 +40,7 @@ const Welcome = ({ token }) => {
 
                 // Set the choosen album
                 setChoosenAlbum(album);
+                setError(null);
             });
     };
 
@@ -53,7 +54,7 @@ const Welcome = ({ token }) => {
                 // Play the choosen album
                 spotifyApi
                     .play({
-                        context_uri: choosenAlbum.album.uri,
+                        context_uri: choosenAlbum.uri,
                     })
                     .then(
                         (data) => setError(null),
@@ -61,9 +62,14 @@ const Welcome = ({ token }) => {
                     );
             } else {
                 // Open album in Spotify
-                window.open(choosenAlbum.album.external_urls.spotify);
+                window.open(choosenAlbum.external_urls.spotify);
             }
         });
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        window.location.reload();
     };
 
     return (
@@ -94,9 +100,9 @@ const Welcome = ({ token }) => {
                     </>
                 )}
             </div>
-            <a href="/auth/logout" className="absolute bottom-3 left-3 btn-primary">
+            <button type="button" onClick={handleLogout} className="absolute bottom-3 left-3 btn-primary">
                 Logout
-            </a>
+            </button>
         </>
     );
 };

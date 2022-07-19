@@ -3,7 +3,7 @@ const request = require("request");
 const dotenv = require("dotenv");
 const path = require("path");
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
 global.access_token = "";
 
@@ -67,12 +67,7 @@ app.get("/auth/callback", (req, res) => {
 
 app.get("/auth/token", (req, res) => {
     res.json({ access_token: access_token });
-});
-
-// Logout
-app.get("/auth/logout", (req, res) => {
-    global.access_token = "";
-    res.redirect("/");
+    access_token = "";
 });
 
 app.listen(port, () => {
