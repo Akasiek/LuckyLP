@@ -3,7 +3,7 @@ const request = require("request");
 const dotenv = require("dotenv");
 const path = require("path");
 
-const port = 5000;
+const port = process.env.PORT;
 
 global.access_token = "";
 
