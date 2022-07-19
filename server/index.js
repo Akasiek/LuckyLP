@@ -1,6 +1,7 @@
 const express = require("express");
 const request = require("request");
 const dotenv = require("dotenv");
+const path = require("path");
 
 const port = 5000;
 
@@ -76,4 +77,12 @@ app.get("/auth/logout", (req, res) => {
 
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`);
+});
+
+// Have Node serve the files for our built React app
+app.use(express.static(path.resolve(__dirname, "../build")));
+
+// All other GET requests not handled before will return our React app
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../build", "index.html"));
 });
