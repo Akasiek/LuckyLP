@@ -4,7 +4,7 @@ import AlbumView from "./AlbumView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFire } from "@fortawesome/free-solid-svg-icons";
 
-const Welcome = ({ token }) => {
+const RandomAlbum = ({ token, setToken }) => {
     const [savedAlbumsCount, setSavedAlbumsCount] = useState(0);
     const [choosenAlbum, setChoosenAlbum] = useState(null);
     const [choosenArtistGenres, setChoosenArtistGenres] = useState([]);
@@ -18,10 +18,17 @@ const Welcome = ({ token }) => {
             .getMySavedAlbums({
                 limit: 1,
             })
-            .then((data) => {
-                setSavedAlbumsCount(data.body.total);
-            });
-    }, [spotifyApi]);
+            .then(
+                (data) => {
+                    setSavedAlbumsCount(data.body.total);
+                },
+                (err) => {
+                    if (err.statusCode === 401) {
+                        setToken(null);
+                    }
+                }
+            );
+    }, [setToken, spotifyApi]);
 
     const chooseRandomAlbum = () => {
         spotifyApi
@@ -29,19 +36,26 @@ const Welcome = ({ token }) => {
                 limit: 1,
                 offset: Math.floor(Math.random() * savedAlbumsCount),
             })
-            .then((data) => {
-                const album = data.body.items[0].album;
+            .then(
+                (data) => {
+                    const album = data.body.items[0].album;
 
-                // Get album's artist genres
-                spotifyApi.getArtist(album.artists[0].id).then(
-                    (data) => setChoosenArtistGenres(data.body.genres.slice(0, 3)),
-                    (err) => console.error(err)
-                );
+                    // Get album's artist genres
+                    spotifyApi.getArtist(album.artists[0].id).then(
+                        (data) => setChoosenArtistGenres(data.body.genres.slice(0, 3)),
+                        (err) => console.error(err)
+                    );
 
-                // Set the choosen album
-                setChoosenAlbum(album);
-                setError(null);
-            });
+                    // Set the choosen album
+                    setChoosenAlbum(album);
+                    setError(null);
+                },
+                (err) => {
+                    if (err.statusCode === 401) {
+                        setToken(null);
+                    }
+                }
+            );
     };
 
     const playChoosenAlbum = () => {
@@ -106,4 +120,4 @@ const Welcome = ({ token }) => {
         </>
     );
 };
-export default Welcome;
+export default RandomAlbum;
